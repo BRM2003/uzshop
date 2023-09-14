@@ -1,0 +1,191 @@
+{% extends 'admin/header.html' %} {% load static %} {% block page_styles %}
+<link rel="stylesheet" href="{% static 'styles/admin_panel/orders_style.css' %}"> {% endblock %} {% block page_content %}
+<section class="main">
+
+    <form action="" method="get">
+        {% csrf_token %}
+        <div class="container">
+            <br>
+            <br>
+            <h3 class="text-center display-4"> Barcha buyurtmalar </h3>
+            <br>
+
+            <div class="container market-search-form">
+                <div data-request="onMarketSearch" data-request-update="'admin/market-products': '#marketProductsList'" data-request-flash="" class="input-group mb-0 px-2">
+
+                    <div class="input-group-prepend">
+                        <button class="btn btn-info" style="border: 1px solid #ddd" type="button" onclick="$('.market-search-input').val(''); $('.market-search-input').submit()" id="button-addon1">X</button>
+                    </div>
+
+                    <input type="text" class="form-control market-search-input" name="searchById" placeholder="ID bo'yicha qidiruv" aria-label="ID bo'yicha qidiruv" data-request-update="'admin/market-products': '#marketProductsList'" aria-describedby="button-addon2" data-request="onMarketSearch"
+                        data-track-input="500" data-request-flash="">
+
+                    <div class="input-group-append">
+                        <button class="btn btn-primary" data-attach-loading="" type="submit" id="button-addon2">Izlash</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="container market-search-form" style="margin-top:20px">
+            <div data-request="onMarketSearch" data-request-update="'admin/market-products': '#marketProductsList'" data-request-flash="" class="input-group mb-0 px-2">
+
+                <div class="input-group-prepend">
+                    <button class="btn btn-info" style="border: 1px solid #ddd" type="button" onclick="$('.market-search-input').val(''); $('.market-search-input').submit()" id="button-addon1">X</button>
+                </div>
+
+                <input type="number" class="form-control market-search-input" name="searchByPhone" placeholder="Raqam bo'yicha qidiruv" aria-label="Raqam bo'yicha qidiruv" data-request-update="'admin/market-products': '#marketProductsList'" aria-describedby="button-addon2"
+                    data-request="onMarketSearch" data-track-input="500" data-request-flash="">
+
+                <div class="input-group-append">
+                    <button class="btn btn-primary" data-attach-loading="" type="submit" id="button-addon2">Izlash</button>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="container">
+            <select style="margin-top:20px;" id="filter" class="form-control" name="filter">
+                <option value="">Filtrlash</option>
+                <option value="1">Yangi</option>
+                <option value="2">Qabul qilindi</option>
+                <option value="3">Yetkazilmoqda</option>
+                <option value="4">Yetqazib berildi</option>
+                <option value="5">Qaytib kelgan</option>
+                <option value="6">Keyin Oladi</option>
+                <option value="7">Qayta Qongiroq</option>
+                <option value="8">Arxiv</option>
+                <option value="9">Dubl</option>
+                <option value="10">Ban</option>
+            </select>
+
+
+            <select style="margin-top:20px;" id="viloyatFilter" class="form-control">
+                <option val="">Viloyat</option>
+                <option value="Hammasi">Hammasi</option>
+                <option value="Toshkent">Toshkent</option>
+                <option value="Toshkent viloyati">Toshkent viloyati</option>
+                <option value="Buxoro">Buxoro</option>
+                <option value="Navoiy">Navoiy</option>
+                <option value="Samarqand">Samarqand</option>
+                <option value="Jizzax">Jizzax</option>
+                <option value="Andijon">Andijon</option>
+                <option value="Farg`ona">Farg`ona</option>
+                <option value="Namangan">Namangan</option>
+                <option value="Sirdaryo">Sirdaryo</option>
+                <option value="Qoraqalpog`iston">Qoraqalpog`iston</option>
+                <option value="Xorazm">Xorazm</option>
+                <option value="Qashqadaryo">Qashqadaryo</option>
+                <option value="Surxondaryo">Surxondaryo</option>
+            </select>
+        </div>
+    </form>
+    <div class="container-fluid">
+        <div style="display:none;justify-content: center; margin-top: 20px;" class="text-center spin">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Kutib turing...</span>
+            </div>
+        </div>
+        <br>
+        <div class="container">
+            <input type="date" id="date" class="form-control">
+        </div>
+
+        <h4 class="text-center display-4" style="text-align:center;margin-top:10px">Jami: {{count_of_orders}}</h4><br>
+
+        <div class="container">
+            <button data-toggle="modal" data-target="3" class="btn btn-danger change_statsu">Yetkazilmoqda</button>
+            <button data-toggle="modal" data-target="4" class="btn btn-danger change_statsu">Yetqazib berildi</button>
+        </div>
+
+        <div class="row">
+
+            {% for order in orders %}
+            <div class="col-lg-6">
+                <div class="card card-margin" style="background-color:#ebf4f8;box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;">
+                    <div class="card-header no-border">
+                        {% if order.status == "1" %}
+                        <h5 class="card-title">Yangi</h5>
+                        {% elif order.status == "2" %}
+                        <h5 class="card-title">Qabul qilindi</h5>
+                        {% elif order.status == "3" %}
+                        <h5 class="card-title">Yetkazilmoqda</h5>
+                        {% elif order.status == "4" %}
+                        <h5 class="card-title">Keyin</h5>
+                        {% elif order.status == "5" %}
+                        <h5 class="card-title">Oladi</h5>
+                        {% elif order.status == "6" %}
+                        <h5 class="card-title">Qayta Qo'ng'iroq</h5>
+                        {% elif order.status == "7" %}
+                        <h5 class="card-title">Arxiv</h5>
+                        {% elif order.status == "8" %}
+                        <h5 class="card-title">Yetqazib berildi</h5>
+                        {% endif %}
+                        <input style="font-size:50px" type="checkbox">
+                    </div>
+                    <div class="card-body pt-0">
+                        <div class="widget-49">
+                            <div class="widget-49-title-wrapper">
+                                <div class="widget-49-date-primary">
+                                    <span class="widget-49-date-day">{{order.order_id}}</span>
+                                </div>
+                                <div class="widget-49-meeting-info">
+                                    <span class="widget-49-pro-title" style="font-weight:bold">{{order.product.title}}</span>
+                                    <span class="widget-49-meeting-time">{{ order.cr_on }}</span>
+                                </div>
+                            </div>
+                            <hr>
+                            <ul class="widget-49-meeting-points">
+                                <li class="widget-49-meeting-item"><span><i style="color:#4e73e5" class="fa-solid fa-user"></i><b style="color:#4e73e5">  Viloyat:</b> <span style="color:#333;font-weight:bold">{{order.region}}</span></span>
+                                </li>
+                                <hr>
+                                <li class="widget-49-meeting-item"><span><i style="color:#4e73e5" class="fa-solid fa-user"></i><b style="color:#4e73e5">  Mijoz ismi:</b> <span style="color:#333;font-weight:bold">{{order.user.user.username}}</span></span>
+                                </li>
+                                <hr>
+                                <li class="widget-49-meeting-item"><span><i style="color:#4e73e5" class="fa-solid fa-phone"></i><b style="color:#4e73e5"> Mijoz raqami:</b> <a style="color:blue;text-decoration:underline" href="tel:{{959664146}}">{{order.user.phone_number}}</a></span></li>
+                                <hr>
+                                <li class="widget-49-meeting-item"><span><i style="color:#4e73e5" class="fa-solid fa-headset"></i><b style="color:#4e73e5"> Operator:</b> <a style="color:blue;text-decoration:underline">0</a></span></li>
+                                <hr>
+                                <li class="widget-49-meeting-item"><span><i style="color:#4e73e5" class="fa-solid fa-dollar-sign"></i><b style="color:#4e73e5">  Qo'yilgan narx:</b> <span style="color:#333;font-weight:bold">0 so'm</span></span>
+                                </li>
+                                <hr>
+                                <li class="widget-49-meeting-item"><span><b style="color:#4e73e5"> Soni:</b> <a style="color:blue;text-decoration:underline">{{order.count_of_products}}</a></span></li>
+                                <hr>
+                                <li class="widget-49-meeting-item"><span><i style="color:#4e73e5" class="fa-solid fa-user"></i><b style="color:#4e73e5">  Izoh:</b> <span style="color:#333;font-weight:bold">{{order.description}}</span></span>
+                                </li>
+                                <hr>
+                                <li class="widget-49-meeting-item"><span><i style="color:#4e73e5" class="fa-solid fa-user"></i><b style="color:#4e73e5">  Admin:</b> <a href="/adminpage/"><span style="color:#333;font-weight:bold"></span></a>
+                                    </span>
+                                </li>
+                                <hr>
+                                <li class="widget-49-meeting-item"><span></span></li>
+                            </ul>
+                            <div class="widget-49-meeting-action">
+                                <a href="#" style="margin-top:10px" data-toggle="modal" id="changeStatus" data-id="26727" data-op="0" data-target="#status" class="btn btn-secondary changeStatus">Statusni O'zgartirish</a>
+                                <a style="margin-top:10px" href="#" id="openReq" data-id="26727" data-toggle="modal" data-target="#oqim" class="btn btn-primary openReq">Batafsil</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            <div class="container" style="justify-content:center;display:flex;margin-bottom:20px">
+                <a><button class="btn btn-primary btn-block">Hammasini yuklash</button></a>
+            </div>
+
+
+
+</section>
+
+{% endblock %} {% block page_scripts %}
+<script>
+    const statuses = document.querySelectorAll('.change_statsu');
+    for (let i = 0; i < statuses.length; i++) {
+        statuses[i].addEventListener('click', () => {
+            ajax
+        })
+    }
+</script>
+{% endblock %}

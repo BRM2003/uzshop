@@ -1,0 +1,30 @@
+{% extends 'shop/header.html' %} {% load static %} {% block title %}O'zbekiston bo'ylab bepul yetqazib berish{% endblock %} {% block page_styles %}
+<link rel="stylesheet" href="{% static 'styles/main_shop_page/product_page_style.css' %}"> {% endblock %} {% block page_content %}
+
+<section class="page_content">
+    <div class="product_info">
+        <img src="/media/{{product.photo}}" alt="" srcset="" class="product_img">
+        <div class="product_text_info">
+            <h2 class="pr_title">{{product.title}}</h2>
+            <h4 class="pr_cotegory">{{product.category}}</h4>
+            <p class="product_desc">{{product.description}}</p>
+            <p class="product_amount"><b>Mahsulot narxi:</b> {{product.amount}} {{product.currency}}</p>
+            {% if authenticated == False %}
+            <button type="submit" class="btn btn-success-2">Buyurtma berish</button> {% else %}
+            <form enctype="multipart/form-data" action="" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="product_id" value="{{product.id}}">
+                <input type="submit" class="btn btn-success" value="Buyurtma berish">
+            </form>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %} {% block page_scripts %} {% if authenticated == False %}
+<script>
+    const buy_btn = document.querySelector('button[type="submit"]');
+    buy_btn.addEventListener('click', () => {
+        window.open('/users/login_user/?page_return=/shop/product?num={{product.id}}', '_self')
+    })
+</script>
+{% endif %} {% endblock %}
