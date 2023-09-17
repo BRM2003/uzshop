@@ -14,6 +14,18 @@ class Admin(admin.ModelAdmin):
         return qs.filter(user=request.user)
 
 
+@admin.register(Operators)
+class Operators(admin.ModelAdmin):
+    icon_name = 'Admin'
+    list_display = ('user', 'phone_number', 'email', 'cr_on')
+
+    def get_queryset(self, request):
+        qs = super(Operators, self).get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(user=request.user)
+
+
 @admin.register(Clients)
 class Client(admin.ModelAdmin):
     icon_name = 'Clients'

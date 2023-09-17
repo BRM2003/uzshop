@@ -5,6 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{% static 'media/icon.ico' %}" type="image/png">
     <title>Uzshop.net internet dokoni {% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'styles/main_shop_page/main_shop_style.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Berkshire+Swash&amp;display=swap" rel="stylesheet">
@@ -22,12 +23,14 @@
         </div>
         {% if authenticated == False %}
         <div class="header_content">
-            <button class="login_btn">
-                Kirish
-                <span class="navbar-text" style="font-size:15px">
-                    <i class="fa fa-user"></i>
-                </span>
-            </button>
+            <a href="/users/login_user/">
+                <button class="login_btn">
+                    Kirish
+                    <span class="navbar-text" style="font-size:15px">
+                        <i class="fa fa-user"></i>
+                    </span>
+                </button>
+            </a>
         </div>
         {% endif %}
     </header>

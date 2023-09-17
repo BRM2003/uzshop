@@ -33,6 +33,10 @@ def main_shop_page(request):
             for category in GoodsCategory.objects.all():
                 categories.append(category.title)
                 response['categories'] = categories
+        if request.user.is_authenticated:
+            response['authenticated'] = True
+        else:
+            response['authenticated'] = False
     except Exception as e:
         response['success'] = True
         response['error_message'] = ['Error', str(e)]
@@ -49,8 +53,9 @@ def product_page(request):
                 response['product'] = product
         else:
             product = Goods.objects.get(id=request.POST['product_id'])
-            client_user = Clients.objects.get(user=request.user)
-            new_order = Orders.objects.create(user=client_user,
+            # client_user = Clients.objects.get(user=request.user)
+            new_order = Orders.objects.create(user_name=request.POST['user_name'],
+                                              user_phone_number=request.POST['phone_number'],
                                               product=product,
                                               status=1)
             new_order.save()

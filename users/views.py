@@ -1,3 +1,5 @@
+import datetime
+
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -7,6 +9,8 @@ from rest_framework.decorators import api_view, permission_classes
 
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from rest_framework.response import Response
+
 from .forms import *
 
 # Imaginary function to handle an uploaded file.
@@ -28,6 +32,7 @@ def sign_up(request):
         form = SignupForm()
     response = {'form': form}
     return render(request, 'authenticate/sign_up.html', response)
+
 
 def login_user(request):
     response = {}
@@ -51,9 +56,6 @@ def login_user(request):
         response['page_return'] = request.GET.get('page_return', '')
         print(response['page_return'])
     return render(request, 'authenticate/login.html', response)
-
-
-#: ['M07am6RspHW8jDY1eowGFF9PnQ58UR7aruebkwSnreioBDq1B1JvTgu7Ru2bQsvQ']
 
 
 @permission_classes([IsAuthenticated])
@@ -89,29 +91,124 @@ def control_page(request):
     return render(request, 'admin/main.html', response)
 
 
-@csrf_exempt
 @permission_classes([IsAuthenticated])
 def orders_page(request):
     response = {}
     try:
         if request.method == 'GET':
             orders_filter = request.GET.get('filter', '')
+            region_filter = request.GET.get('region', '')
             search_by_id = request.GET.get('searchById', '')
             search_by_phone = request.GET.get('searchByPhone', '')
             if search_by_phone != '':
-                response['orders'] = Orders.objects.filter(user__phone_number__search=search_by_phone)
+                response['orders'] = Orders.objects.filter(user__phone_number=search_by_phone)
             elif search_by_id != '':
                 response['orders'] = Orders.objects.filter(order_id=search_by_id)
             elif orders_filter != '':
                 response['orders'] = Orders.objects.filter(status=orders_filter)
+            elif region_filter != '':
+                response['orders'] = Orders.objects.filter(region=region_filter)
             else:
                 response['orders'] = Orders.objects.all()
-            response['count_of_orders'] = len(response['orders'])
-            print(response['orders'])
-            print(response['count_of_orders'])
+            if len(response['orders']) > 0:
+                response['count_of_orders'] = len(response['orders'])
+            else:
+                response['count_of_orders'] = 0
         else:
-            print(request.POST)
+            if request.POST['change_status']:
+                order = Orders.objects.get(order_id=request.POST['order'])
+                if request.POST['UpdateForm[status]'] != 0:
+                    order.status = request.POST['UpdateForm[status]']
+                order.operator = request.POST['operator']
+                order.save()
+            response['orders'] = Orders.objects.all()
+            response['count_of_orders'] = len(response['orders'])
+        if request.user.is_superuser:
+            response['super_user'] = True
+            response['admin_list'] = Admins.objects.all()
+        else:
+            response['super_user'] = False
     except Exception as e:
+        print(str(e))
         response['success'] = False
         response['error_message'] = str(e)
     return render(request, 'admin/orders.html', response)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def change_status(request):
+    response = {}
+    try:
+        data = request.data
+        response['success'] = True
+        response['orders'] = Orders.objects.all()
+        response['count_of_orders'] = len(response['orders'])
+        admin = Admins.objects.get(id=data['UpdateForm[admin]'])
+        if Orders.objects.filter(order_id=data['order']).exists():
+            order = Orders.objects.get(order_id=data['order'])
+            order.region = data['viloyat']
+            order.status = data['UpdateForm[status]']
+            order.admin = admin
+            order.count_of_products = data['quant']
+            order.total_amount = data['summa']
+            order.comment = data['UpdateForm[comment]']
+            order.up_on = datetime.datetime.now()
+            order.save()
+        else:
+            response['success'] = False
+            response['error'] = 'there is no order'
+    except Exception as e:
+        response['success'] = False
+        response['error'] = str(e)
+    return render(request, 'admin/orders.html', response)
+
+
+@permission_classes([IsAuthenticated])
+def operator_page(request):
+    def count_of_claims(filter_value, operator_id):
+        result = Orders.objects.filter(operator=operator_id, status=filter_value)
+        return result
+    response = {'table': {}}
+    try:
+        all_operators = Operators.objects.all()
+        for operator in all_operators:
+            response['table']['operator_' + str(operator.user.id) + ' (' + str(operator.user.username) + ')'] = {}
+            for stat in [1, 2, 3, 6, 8, 4, 7]:
+                orders_result = count_of_claims(stat, operator.user.id)
+                response['table']['operator_' + str(operator.user.id) + ' (' + str(operator.user.username) + ')']['orders_len_' + str(stat)] = len(orders_result)
+    except Exception as e:
+        print(str(e))
+    print(response)
+    return render(request, 'admin/operators.html', response)
+
+
+@permission_classes([IsAuthenticated])
+def admins_page(request):
+    def count_of_claims(filter_value, adm):
+        result = Orders.objects.filter(admin=adm, status=filter_value)
+        return result
+
+    def get_all_amount(adm):
+        local_orders = Orders.objects.filter(admin=adm)
+        result = 0
+        for order in local_orders:
+            result += order.total_amount
+        return result
+
+    response = {'table': {}}
+    try:
+        admins = Admins.objects.all()
+        for admin in admins:
+            response['table']['admin_' + str(admin.id)] = {}
+            response['table']['admin_' + str(admin.id)]['admin_name'] = admin
+            for stat in range(10):
+                orders_result = count_of_claims(stat + 1, admin)
+                response['table']['admin_' + str(admin.id)]['orders_len_' + str(stat+1)] = len(orders_result)
+            response['table']['admin_' + str(admin.id)]['total_amount'] = get_all_amount(admin)
+    except Exception as e:
+        print(str(e))
+        response['success'] = False
+        response['error_message'] = str(e)
+    print(response)
+    return render(request, 'admin/admins.html', response)
