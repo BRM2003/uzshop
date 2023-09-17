@@ -43,8 +43,14 @@ def login_user(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            page_return = request.POST['page_return']
-            if page_return == '':
+            if 'page_return' in request.POST:
+                page_return = request.POST['page_return']
+                if page_return == '':
+                    if Admins.objects.filter(user=user).exists():
+                        page_return = 'control'
+                    else:
+                        page_return = '/shop'
+            else:
                 if Admins.objects.filter(user=user).exists():
                     page_return = 'control'
                 else:
