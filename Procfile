@@ -1,1 +1,1 @@
-web: gunicorn uzshop.wsgi --log-file -
+web: python manage.py runserver
