@@ -1,1 +1,1 @@
-web: gunicorn uzshop.wsgi --log-file -
+gunicorn users:app
