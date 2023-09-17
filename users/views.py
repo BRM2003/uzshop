@@ -34,6 +34,7 @@ def sign_up(request):
     return render(request, 'authenticate/sign_up.html', response)
 
 
+@csrf_exempt
 def login_user(request):
     response = {}
     if request.method == 'POST':
