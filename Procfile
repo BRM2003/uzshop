@@ -1,1 +1,1 @@
-web: gunicorn uzshop.wsgi:app
+web: gunicorn users:app
