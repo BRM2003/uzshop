@@ -60,7 +60,7 @@
         const all_categories = document.querySelectorAll('.category'),
             search_input = document.querySelector('input[type="search"]');
         let len_of_celected_categories = 0,
-            url = 'http://127.0.0.1:8000/shop?category='
+            url = '/shop?category='
         for (let i = 0; i < all_categories.length; i++) {
             if (all_categories[i].classList.contains('selected')) {
                 len_of_celected_categories++;
