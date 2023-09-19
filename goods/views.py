@@ -35,6 +35,8 @@ def main_shop_page(request):
                 response['categories'] = categories
         if request.user.is_authenticated:
             response['authenticated'] = True
+            if Admins.objects.filter(user=request.user).exists():
+                response['admin'] = True
         else:
             response['authenticated'] = False
     except Exception as e:

@@ -32,6 +32,17 @@
                 </button>
             </a>
         </div>
+        {% elif admin == True %}
+        <div class="header_content">
+            <a href="/users/admin/panel">
+                <button class="login_btn">
+                    Admin
+                    <span class="navbar-text" style="font-size:15px">
+                        <i class="fa fa-user"></i>
+                    </span>
+                </button>
+            </a>
+        </div>
         {% endif %}
     </header>
     <main id="page_main_content">
