@@ -12,6 +12,7 @@ import os
 
 
 @api_view(['POST'])
+@csrf_exempt
 def main_script(request):
     try:
         path = '../media/sqb/'
