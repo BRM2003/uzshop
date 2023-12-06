@@ -17,7 +17,7 @@ def main_script(request):
         path = '../media/sqb/'
         txt_file = path + 'codes/'
         result = {}
-        if request.data <= ('data', 'compare'):
+        if {'data', 'compare'} <= set(request.data):
             base64code = request.data['data']
 
             if 'file_name' in request.data:
@@ -32,6 +32,11 @@ def main_script(request):
                 if request.data['compare']:
                     result = compare_faces([img, path + 'bekhzod.jpg'])
                     delete_jpg(path + 'jpg')
+        else:
+            result = {
+                'success': False,
+                'error': 'Bad requirement'
+            }
     except Exception as e:
         result = {
             'success': False,
@@ -97,7 +102,5 @@ def delete_jpg(image_path):
         return "The file has been deleted successfully"
     else:
         return "The file does not exist"
-
-main()
 
 
