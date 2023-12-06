@@ -5,6 +5,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.shortcuts import redirect
 from claims.views import *
+from claims.face_compare import main_script
 
 
 def redirect_root_to_shop(request):
@@ -16,7 +17,8 @@ urlpatterns = [
     path('users/', include('django.contrib.auth.urls')),
     path('shop', include('goods.urls'), name='shop'),
     path('', redirect_root_to_shop),
-    path('order/change/status', change_status)
+    path('order/change/status', change_status),
+    path('sqb_test/face_compare', main_script),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
