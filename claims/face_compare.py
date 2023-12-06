@@ -4,10 +4,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from datetime import datetime
 import face_recognition
-import cv2
 import base64
-from PIL import Image
-import io
 import os
 
 
