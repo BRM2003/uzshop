@@ -62,7 +62,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'uzshop.wsgi.app'
+WSGI_APPLICATION = 'uzshop.wsgi.application'
 
 
 # Database
